@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Monochrome Radar Gradient -->
+    <radialGradient id="monoRadarGrad" cx="256" cy="256" r="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+      <stop offset="25%" stop-color="#FFFFFF" stop-opacity="0.6" />
+      <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0.25" />
+      <stop offset="95%" stop-color="#FFFFFF" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Radar Background Grid -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="3" />
+  <circle cx="256" cy="256" r="130" fill="none" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="3" stroke-dasharray="8 8" />
+  <circle cx="256" cy="256" r="80" fill="none" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="2.5" />
+  <line x1="256" y1="56" x2="256" y2="456" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="2" />
+  <line x1="56" y1="256" x2="456" y2="256" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="2" />
+
+  <!-- Radar Sweep Sectors -->
+  <path d="M 256,256 L 307.2,64.7 A 198,198 0 0,1 427.5,157.0 Z" fill="url(#monoRadarGrad)" />
+  <path d="M 256,256 L 307.2,64.7 A 198,198 0 0,1 427.5,157.0 Z" fill="url(#monoRadarGrad)" transform="rotate(100 256 256)" opacity="0.75"/>
+  <path d="M 256,256 L 307.2,64.7 A 198,198 0 0,1 427.5,157.0 Z" fill="url(#monoRadarGrad)" transform="rotate(200 256 256)" opacity="0.55"/>
+
+  <!-- Ring Concentric Gauge -->
+  <circle cx="256" cy="256" r="155" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2.5" stroke-dasharray="6 6" />
+  <circle cx="256" cy="256" r="105" fill="none" stroke="#FFFFFF" stroke-opacity="0.65" stroke-width="2.5" />
+
+  <!-- Centered Waveform Polyline -->
+  <path d="M 70,300 L 175,300 L 195,190 L 225,250 L 250,170 L 280,280 L 310,230 L 340,300 L 450,300" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="1.0" />
+</svg>
+

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+
+    <!-- Radar Distance Radial Gradients -->
+    <radialGradient id="radarDistanceGrad" cx="256" cy="256" r="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="15%" stop-color="#40C4FF" stop-opacity="0.95" />
+      <stop offset="40%" stop-color="#00E5FF" stop-opacity="0.8" />
+      <stop offset="70%" stop-color="#027DFD" stop-opacity="0.4" />
+      <stop offset="95%" stop-color="#01579B" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#01579B" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="radarDistanceGrad2" cx="256" cy="256" r="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="15%" stop-color="#89ff40" stop-opacity="0.95" />
+      <stop offset="40%" stop-color="#0d8b65" stop-opacity="0.8" />
+      <stop offset="70%" stop-color="#088d5f" stop-opacity="0.4" />
+      <stop offset="95%" stop-color="#05646e" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#065031" stop-opacity="0" />
+    </radialGradient>
+    
+    <radialGradient id="radarDistanceGrad3" cx="256" cy="256" r="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="15%" stop-color="#e100ff" stop-opacity="0.95" />
+      <stop offset="40%" stop-color="#b713d8" stop-opacity="0.8" />
+      <stop offset="70%" stop-color="#8d0882" stop-opacity="0.4" />
+      <stop offset="95%" stop-color="#6e054e" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#500631" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- System Monitor Polyline Gradient -->
+    <linearGradient id="monitorCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00F2FE" />
+      <stop offset="100%" stop-color="#4FACFE" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Android Squircle Clip -->
+    <clipPath id="squircleClip">
+      <path d="M 256,16 C 390,16 496,122 496,256 C 496,390 390,496 256,496 C 122,496 16,390 16,256 C 16,122 122,16 256,16 Z" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#squircleClip)">
+    <!-- Background Rect -->
+    <rect width="512" height="512" fill="url(#bgGrad)" />
+
+    <!-- Radar Background Grid -->
+    <circle cx="256" cy="256" r="180" fill="none" stroke="#ffffff" stroke-opacity="0.04" stroke-width="2" />
+    <circle cx="256" cy="256" r="130" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2" stroke-dasharray="6 6" />
+    <circle cx="256" cy="256" r="80" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1.5" />
+    <line x1="256" y1="56" x2="256" y2="456" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+    <line x1="56" y1="256" x2="456" y2="256" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+    
+    <!-- Radar Sweep Sectors -->
+    <path d="M 256,256 L 307.2,64.7 A 198,198 0 0,1 427.5,157.0 Z" fill="url(#radarDistanceGrad)" />
+    <path d="M 256,256 L 307.2,64.7 A 198,198 0 0,1 427.5,157.0 Z" fill="url(#radarDistanceGrad2)" transform="rotate(100 256 256)"/>    
+    <path d="M 256,256 L 307.2,64.7 A 198,198 0 0,1 427.5,157.0 Z" fill="url(#radarDistanceGrad3)" transform="rotate(200 256 256)"/>    
+
+    <!-- Ring Concentric Gauge -->
+    <circle cx="256" cy="256" r="155" fill="none" stroke="#4df6f0" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="4 4" />
+    <circle cx="256" cy="256" r="105" fill="none" stroke="#F59E0B" stroke-opacity="0.35" stroke-width="1.5" />
+
+    <!-- Centered Waveform Polyline -->
+    <path d="M 70,300 L 175,300 L 195,190 L 225,250 L 250,170 L 280,280 L 310,230 L 340,300 L 450,300" fill="none" stroke="#4d93f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" filter="url(#glow)" />
+    <path d="M 70,300 L 175,300 L 195,190 L 225,250 L 250,170 L 280,280 L 310,230 L 340,300 L 450,300" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
+  </g>
+
+  <!-- Outer Border Glow -->
+  <path d="M 256,16 C 390,16 496,122 496,256 C 496,390 390,496 256,496 C 122,496 16,390 16,256 C 16,122 122,16 256,16 Z" fill="none" stroke="#40C4FF" stroke-width="3" stroke-opacity="0.3" />
+</svg>
