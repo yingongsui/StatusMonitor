@@ -115,4 +115,14 @@ class SystemService {
       return false;
     }
   }
+
+  // Open external web URL in default browser
+  static Future<bool> openUrl(String url) async {
+    try {
+      final bool? res = await _channel.invokeMethod('openUrl', {'url': url});
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
 }

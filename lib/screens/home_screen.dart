@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:status_monitor/app_state.dart';
 import 'package:status_monitor/services/system_service.dart';
@@ -485,7 +486,7 @@ class SettingsDrawer extends StatelessWidget {
                   style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "Configure refresh rates & telemetry",
+                  "Configure refresh rates & monitor",
                   style: TextStyle(fontSize: 12, color: Colors.white70),
                 ),
               ],
@@ -813,8 +814,183 @@ class SettingsDrawer extends StatelessWidget {
               SystemService.syncFromAppState(state);
             },
           ),
+
+          const Divider(),
+
+          // About Section
+          _buildAboutSection(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildAboutSection(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const githubUrl = "https://github.com/yingongsui/StatusMonitor";
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "About",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.purpleAccent,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Image.asset(
+                'assets/app_icon_monochrome.png',
+                width: 36,
+                height: 36,
+                //color: isDark ? Colors.cyanAccent : const Color(0xFF0072FF),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Status Monitor",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      "v1.0.0 • Real-time System Monitor",
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? Colors.white54 : Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "A lightweight, real-time Android system resource monitor and floating window monitor built with Flutter.",
+            style: TextStyle(
+              fontSize: 12,
+              height: 1.4,
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildFeatureItem(Icons.memory_rounded, const Color(0xFF1E90FF), "CPU", "Time-Occupied & Freq-Weighted", isDark),
+          const SizedBox(height: 6),
+          _buildFeatureItem(Icons.storage_rounded, const Color(0xFFFF4081), "RAM", "Physical memory allocation & peak stats", isDark),
+          const SizedBox(height: 6),
+          _buildFeatureItem(Icons.wifi_rounded, const Color(0xFF00E676), "Network", "Real-time upload & download throughput", isDark),
+          const SizedBox(height: 6),
+          _buildFeatureItem(Icons.picture_in_picture_alt_rounded, const Color(0xFFFF9100), "Overlay", "Floating window with screen-off sleep", isDark),
+          const SizedBox(height: 14),
+          InkWell(
+            onTap: () => SystemService.openUrl(githubUrl),
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark ? Colors.white12 : Colors.black12,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.code_rounded,
+                    size: 18,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "GitHub Repository",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          githubUrl,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontFamily: 'monospace',
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.copy_rounded, size: 16),
+                    tooltip: "Copy URL",
+                    constraints: const BoxConstraints(),
+                    padding: const EdgeInsets.all(6),
+                    onPressed: () {
+                      Clipboard.setData(const ClipboardData(text: githubUrl));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Repository URL copied to clipboard"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, Color color, String title, String desc, bool isDark) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 8),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: TextStyle(
+                fontSize: 11,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
+              children: [
+                TextSpan(
+                  text: "$title: ",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: desc,
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
