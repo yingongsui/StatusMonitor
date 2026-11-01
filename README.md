@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <b>A lightweight, real-time Android system resource telemetry and floating window monitor built with Flutter.</b>
+  <b>A lightweight, real-time Android system resource telemetry and floating window monitor built with Flutter and AI.</b>
 </p>
 
 <p align="center">
