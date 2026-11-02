@@ -329,17 +329,18 @@ class _UsageChartState extends State<UsageChart> {
                             (effectiveEnabled
                                 ? "Active real-time telemetry"
                                 : "Monitoring paused"),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
                         style: TextStyle(
                           fontSize: 11,
                           color: subTextColor,
+                          height: 1.25,
                         ),
                       ),
                     ],
                   ),
                 ),
-                // Real-time Number Display (Constrained min-width prevents left subtitle from wrapping/bouncing)
+                const SizedBox(width: 8),
+                // Real-time Number Display (Constrained min-width stabilizes telemetry readouts)
                 ConstrainedBox(
                   constraints: BoxConstraints(
                     minWidth: isNetwork ? 108.0 : 86.0,
@@ -646,7 +647,7 @@ class _UsageChartState extends State<UsageChart> {
                         Text(
                           "${effectiveUsedGb.toStringAsFixed(2)} GB / ${effectiveTotalGb.toStringAsFixed(2)} GB",
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'monospace',
                             color: primGrad.last,
