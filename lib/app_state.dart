@@ -48,6 +48,10 @@ class AppState extends ChangeNotifier {
   double get floatingOpacity => _floatingOpacity;
   bool get isFloatingTapEnabled => _isFloatingTapEnabled;
 
+  // --- Link Opener Settings ---
+  bool _isLinkOpenerEnabled = false;
+  bool get isLinkOpenerEnabled => _isLinkOpenerEnabled;
+
   // --- Total Memory Capacity (GB) ---
   double _totalMemGb = 8.0;
   double get totalMemGb => _totalMemGb;
@@ -77,6 +81,7 @@ class AppState extends ChangeNotifier {
   static const String _keyFloatingScale = "settings_floating_scale";
   static const String _keyFloatingOpacity = "settings_floating_opacity";
   static const String _keyFloatingTapEnabled = "settings_floating_tap_enabled";
+  static const String _keyLinkOpenerEnabled = "settings_link_opener_enabled";
 
   AppState();
 
@@ -103,6 +108,7 @@ class AppState extends ChangeNotifier {
       _floatingScale = prefs.getDouble(_keyFloatingScale) ?? 0.10;
       _floatingOpacity = prefs.getDouble(_keyFloatingOpacity) ?? 0.80;
       _isFloatingTapEnabled = prefs.getBool(_keyFloatingTapEnabled) ?? false;
+      _isLinkOpenerEnabled = prefs.getBool(_keyLinkOpenerEnabled) ?? false;
 
       notifyListeners();
     } catch (_) {}
@@ -376,6 +382,12 @@ class AppState extends ChangeNotifier {
       if (opacity != null) prefs.setDouble(_keyFloatingOpacity, opacity);
       if (tapEnabled != null) prefs.setBool(_keyFloatingTapEnabled, tapEnabled);
     });
+  }
+
+  void updateLinkOpenerEnabled(bool enabled) {
+    _isLinkOpenerEnabled = enabled;
+    notifyListeners();
+    SharedPreferences.getInstance().then((p) => p.setBool(_keyLinkOpenerEnabled, enabled));
   }
 
   // --- Shift Windows for CPU ---

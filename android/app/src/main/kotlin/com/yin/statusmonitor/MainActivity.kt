@@ -1,6 +1,8 @@
 package com.yin.statusmonitor
 
 import android.app.ActivityManager
+import android.app.role.RoleManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +19,9 @@ import kotlin.math.max
 class MainActivity: FlutterActivity() {
     private val HARDWARE_CHANNEL = "com.example.app/hardware"
     private val SYSINFO_CHANNEL = "com.example.statusbarshow/sysinfo"
+    private val REQUEST_CODE_BROWSER_ROLE = 2001
+
+    private var pendingBrowserRoleResult: MethodChannel.Result? = null
 
     // Jiffies tracking for time-based CPU fallback
     private var prevTotalJiffies = 0L
@@ -159,9 +164,119 @@ class MainActivity: FlutterActivity() {
                         result.success(false)
                     }
                 }
+                "setLinkOpenerEnabled" -> {
+                    val enabled = call.argument<Boolean>("enabled") ?: false
+                    setLinkOpenerComponentEnabled(enabled)
+                    result.success(true)
+                }
+                "isLinkOpenerEnabled" -> {
+                    result.success(isLinkOpenerComponentEnabled())
+                }
+                "isDefaultBrowser" -> {
+                    result.success(isAppDefaultBrowser())
+                }
+                "requestDefaultBrowser" -> {
+                    setLinkOpenerComponentEnabled(true)
+                    requestDefaultBrowserRole(result)
+                }
+                "openDefaultAppsSettings" -> {
+                    result.success(openSystemDefaultAppsSettings())
+                }
                 else -> {
                     result.notImplemented()
                 }
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_BROWSER_ROLE) {
+            pendingBrowserRoleResult?.success(isAppDefaultBrowser())
+            pendingBrowserRoleResult = null
+        }
+    }
+
+    private fun linkOpenerComponent(): ComponentName {
+        return ComponentName(this, LinkOpenerActivity::class.java)
+    }
+
+    private fun isLinkOpenerComponentEnabled(): Boolean {
+        return packageManager.getComponentEnabledSetting(linkOpenerComponent()) ==
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+    }
+
+    private fun setLinkOpenerComponentEnabled(enabled: Boolean) {
+        val targetState = if (enabled) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+        val currentState = packageManager.getComponentEnabledSetting(linkOpenerComponent())
+        if (currentState != targetState) {
+            packageManager.setComponentEnabledSetting(
+                linkOpenerComponent(),
+                targetState,
+                PackageManager.DONT_KILL_APP
+            )
+        }
+    }
+
+    private fun isAppDefaultBrowser(): Boolean {
+        if (!isLinkOpenerComponentEnabled()) return false
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+            roleManager != null &&
+                roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER) &&
+                roleManager.isRoleHeld(RoleManager.ROLE_BROWSER)
+        } else {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com")).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+            }
+            @Suppress("DEPRECATION")
+            val resolveInfo = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            resolveInfo?.activityInfo?.packageName == packageName
+        }
+    }
+
+    private fun requestDefaultBrowserRole(result: MethodChannel.Result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+            if (roleManager != null && roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER)) {
+                if (!roleManager.isRoleHeld(RoleManager.ROLE_BROWSER)) {
+                    try {
+                        pendingBrowserRoleResult?.success(false)
+                        pendingBrowserRoleResult = result
+                        val roleIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER)
+                        @Suppress("DEPRECATION")
+                        startActivityForResult(roleIntent, REQUEST_CODE_BROWSER_ROLE)
+                        return
+                    } catch (_: Exception) {
+                        pendingBrowserRoleResult = null
+                    }
+                }
+            }
+        }
+        openSystemDefaultAppsSettings()
+        result.success(isAppDefaultBrowser())
+    }
+
+    private fun openSystemDefaultAppsSettings(): Boolean {
+        return try {
+            startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
+            true
+        } catch (_: Exception) {
+            try {
+                startActivity(
+                    Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:$packageName")
+                    )
+                )
+                true
+            } catch (_: Exception) {
+                false
             }
         }
     }

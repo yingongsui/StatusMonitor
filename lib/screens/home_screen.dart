@@ -48,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (state.isStatusBarEnabled || state.isFloatingEnabled) {
         SystemService.syncFromAppState(state);
       }
+      SystemService.setLinkOpenerEnabled(state.isLinkOpenerEnabled);
     });
   }
 
@@ -817,6 +818,11 @@ class SettingsDrawer extends StatelessWidget {
 
           const Divider(),
 
+          // Link Opener Section
+          const _LinkOpenerSection(),
+
+          const Divider(),
+
           // About Section
           _buildAboutSection(context),
         ],
@@ -864,7 +870,7 @@ class SettingsDrawer extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "v1.0.0 • Real-time System Monitor",
+                      "v2.0.0 • Real-time System Monitor",
                       style: TextStyle(
                         fontSize: 11,
                         color: isDark ? Colors.white54 : Colors.black54,
@@ -892,6 +898,8 @@ class SettingsDrawer extends StatelessWidget {
           _buildFeatureItem(Icons.wifi_rounded, const Color(0xFF00E676), "Network", "Real-time upload & download throughput", isDark),
           const SizedBox(height: 6),
           _buildFeatureItem(Icons.picture_in_picture_alt_rounded, const Color(0xFFFF9100), "Overlay", "Floating window with screen-off sleep", isDark),
+          const SizedBox(height: 6),
+          _buildFeatureItem(Icons.open_in_browser_rounded, Colors.lightBlueAccent, "Link Opener", "Choose browser when opening links", isDark),
           const SizedBox(height: 14),
           InkWell(
             onTap: () => SystemService.openUrl(githubUrl),
@@ -1080,6 +1088,149 @@ class SettingsDrawer extends StatelessWidget {
           value: value.clamp(min, max),
           onChanged: isEnabled ? onChanged : null,
         ),
+      ],
+    );
+  }
+}
+
+class _LinkOpenerSection extends StatefulWidget {
+  const _LinkOpenerSection();
+
+  @override
+  State<_LinkOpenerSection> createState() => _LinkOpenerSectionState();
+}
+
+class _LinkOpenerSectionState extends State<_LinkOpenerSection> with WidgetsBindingObserver {
+  bool _isDefaultBrowser = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refreshStatus();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshStatus();
+    }
+  }
+
+  Future<void> _refreshStatus() async {
+    final isDefault = await SystemService.isDefaultBrowser();
+    if (mounted && isDefault != _isDefaultBrowser) {
+      setState(() {
+        _isDefaultBrowser = isDefault;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            "Link Opener",
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.lightBlueAccent),
+          ),
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.open_in_browser_rounded),
+          title: const Text("Link Opener"),
+          subtitle: const Text(
+            "Choose browser whenever opening a web link",
+            style: TextStyle(fontSize: 11),
+          ),
+          value: state.isLinkOpenerEnabled,
+          onChanged: (enabled) async {
+            await SystemService.setLinkOpenerEnabled(enabled);
+            state.updateLinkOpenerEnabled(enabled);
+            await _refreshStatus();
+          },
+        ),
+        if (state.isLinkOpenerEnabled)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withValues(alpha: 0.04) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _isDefaultBrowser
+                      ? const Color(0xFF00E676).withValues(alpha: 0.45)
+                      : (isDark ? Colors.white12 : Colors.black12),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        _isDefaultBrowser ? Icons.check_circle_rounded : Icons.info_outline_rounded,
+                        size: 16,
+                        color: _isDefaultBrowser ? const Color(0xFF00E676) : Colors.amber,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _isDefaultBrowser
+                              ? "Active as Default Browser"
+                              : "Set StatusMonitor as your default browser to pick a browser per link",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: _isDefaultBrowser ? FontWeight.bold : FontWeight.normal,
+                            color: isDark ? Colors.white70 : Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  if (!_isDefaultBrowser) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: () async {
+                          final granted = await SystemService.requestDefaultBrowser();
+                          if (mounted) {
+                            setState(() {
+                              _isDefaultBrowser = granted;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.language_rounded, size: 18),
+                        label: const Text("Set as Default Browser"),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => SystemService.openDefaultAppsSettings(),
+                      icon: const Icon(Icons.settings_applications_rounded, size: 18),
+                      label: const Text("Default Apps Settings"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

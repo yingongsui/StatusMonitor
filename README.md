@@ -58,6 +58,11 @@
 - Android 13+ Themed Icons (`monochrome`) compatible with Material You dynamic color tinting.
 - High-definition radar and waveform vector design.
 
+### 🔗 8. Link Opener (Browser Chooser)
+- **Always-Ask Browser Picker**: Enables Status Monitor to act as a lightweight default browser (`ROLE_BROWSER`) on modern Android (including Android 17+), bypassing locked default browser behavior when Chrome or other browsers are installed.
+- **Instant Native Chooser Dialog**: Pops up a fast translucent browser & app selection dialog (`LinkOpenerActivity`) whenever a web link (`http`/`https`) is opened, letting you pick which browser or domain app handles each link.
+- **URL Preview & Copy**: Displays the link host and full URL with one-tap clipboard copy.
+
 ---
 
 ## 🛠️ Tech Stack & Architecture
@@ -65,7 +70,7 @@
 - **UI Framework**: Flutter (Dart)
 - **State Management**: `provider` (`ChangeNotifier`)
 - **Charting Engine**: `fl_chart`
-- **Native Android Core**: Kotlin (`MonitorForegroundService`, `MainActivity`)
+- **Native Android Core**: Kotlin (`MonitorForegroundService`, `MainActivity`, `LinkOpenerActivity`)
 - **Inter-Process Communication**: Flutter Platform Channels (`MethodChannel`)
 - **Persistence**: `SharedPreferences`
 

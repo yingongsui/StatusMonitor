@@ -125,4 +125,54 @@ class SystemService {
       return false;
     }
   }
+
+  // Enable or disable the LinkOpenerActivity component in Android PackageManager
+  static Future<bool> setLinkOpenerEnabled(bool enabled) async {
+    try {
+      final bool? res = await _channel.invokeMethod('setLinkOpenerEnabled', {'enabled': enabled});
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Check whether LinkOpenerActivity is currently enabled
+  static Future<bool> isLinkOpenerEnabled() async {
+    try {
+      final bool? res = await _channel.invokeMethod('isLinkOpenerEnabled');
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Check whether StatusMonitor is currently the system default browser
+  static Future<bool> isDefaultBrowser() async {
+    try {
+      final bool? res = await _channel.invokeMethod('isDefaultBrowser');
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Request system Default Browser role (or open Default Apps settings)
+  static Future<bool> requestDefaultBrowser() async {
+    try {
+      final bool? res = await _channel.invokeMethod('requestDefaultBrowser');
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Open Android System Default Apps settings directly
+  static Future<bool> openDefaultAppsSettings() async {
+    try {
+      final bool? res = await _channel.invokeMethod('openDefaultAppsSettings');
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
 }
